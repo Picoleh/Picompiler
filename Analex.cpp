@@ -4,10 +4,12 @@ const vector<char> LETRAS = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', '
 const vector<char> DIGITOS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 const vector<string> SIMBOLOS_ESPECIAIS = {".", ";", ",", "(", ")", ":", "=", "<", ">", "+", "-", "*", ":=", "(*", "*)"};
 const vector<string> PALAVRAS_RESERVADAS = {"program", "label", "var", "procedure", "function", "begin", "end", "if", "then", "else", "while", "do", "or", "and",
-     "div", "not"};
+     "div", "not", "read", "write", "integer"};
+const vector<string> SIMBOLOS_COMUNS = {" ", "", "\t", "\n"};
 map<string,string> TOKENS = {{".","pt"}, {";","ptvig"}, {",","vig"}, {"(","ap"}, {")","fp"}, {":","dpt"}, {"=", "ig"}, {"+","soma"}, {"-", "menos"}, {"*", "multi"},
- {":=", "atrib"}, {"program", "prog"}, {"label", "lbl"}, {"var", "v"}, {"procedure", "proc"}, {"function", "fn"}, {"begin", "beg"}, {"end", "end"}, {"if", "if"},
-  {"then", "then"}, {"else", "el"}, {"while", "while"}, {"do", "do"}, {"or", "or"}, {"and", "and"}, {"div", "div"}, {"not", "not"}};
+ {":=", "atrib"}, {"<=", "<="}, {">=", ">="}, {"program", "prog"}, {"label", "lbl"}, {"var", "v"}, {"integer", "int"}, {"procedure", "proc"}, {"read", "rd"},
+ {"write", "wrt"}, {"function", "fn"}, {"begin", "beg"}, {"end", "end"}, {"if", "if"},
+ {"then", "then"}, {"else", "el"}, {"while", "while"}, {"do", "do"}, {"or", "or"}, {"and", "and"}, {"div", "/"}, {"not", "not"}};
 
 vector<string> TOKENS_ID;
 ifstream arquivo;
@@ -65,7 +67,7 @@ void Analex::showError(int tipo, int linha){
         cerr << "Error: Simbolo desconhecido\nLinha: " << linha << "\n";
         break;
     case 1: // Identificador ou numero mal formado
-        cerr << "Error: identificador ou numero mal formado\nLinha" << linha << "\n";
+        cerr << "Error: identificador ou numero mal formado\nLinha: " << linha << "\n";
         break;
     default:
         break;
@@ -87,15 +89,10 @@ void Analex::analisar(){
         return;
     }
 
-    int linha = 0;
+    int linha = 1;
+    string simbolo = proximoSimbolo();
     while(!arquivo.eof()){
         string atomo = "";
-        string simbolo = proximoSimbolo();
-
-        while(simbolo == "\n"){
-            simbolo = proximoSimbolo();
-            linha++;
-        }
 
         if(pertence(simbolo,SIMBOLOS_ESPECIAIS)){
             atomo = simbolo;
@@ -105,7 +102,12 @@ void Analex::analisar(){
                 simbolo = proximoSimbolo();
             }
 
-            arquivoSaida << getToken(0, atomo) << "\n";
+            if((atomo == "<" || atomo == ">") && simbolo == "="){
+                atomo = atomo + simbolo;
+                simbolo = proximoSimbolo();
+            }
+
+            arquivoSaida << getToken(0, atomo) << " ";
         }
         else if(pertence(simbolo, LETRAS)){
             while(pertence(simbolo, LETRAS) || pertence(simbolo,DIGITOS)){
@@ -113,9 +115,9 @@ void Analex::analisar(){
                 simbolo = proximoSimbolo();
             }
             if(pertence(atomo, PALAVRAS_RESERVADAS))
-                arquivoSaida << getToken(0, atomo) << "\n";
+                arquivoSaida << getToken(0, atomo) << " ";
             else
-                arquivoSaida << getToken(1, atomo) << "\n";
+                arquivoSaida << getToken(1, atomo) << " ";
         }
         else if(pertence(simbolo, DIGITOS)){
             while(pertence(simbolo, DIGITOS)){
@@ -126,11 +128,20 @@ void Analex::analisar(){
             if(pertence(simbolo, LETRAS))
                 showError(1,linha);
             
-            arquivoSaida << getToken(2, atomo) << "\n";
+            arquivoSaida << getToken(2, atomo) << " ";
+        }
+        else if(pertence(simbolo, SIMBOLOS_COMUNS)){
+            if(simbolo == "\n")
+                linha++;
+            if(simbolo != " ")
+                arquivoSaida << simbolo;
+            simbolo = proximoSimbolo();
         }
         else{
             showError(0, linha);
+            simbolo = proximoSimbolo();
         }
+
     }
 
     arquivo.close();
