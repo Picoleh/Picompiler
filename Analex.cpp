@@ -1,4 +1,5 @@
 #include "Analex.h"
+#include "Exceptions.h"
 
 const vector<char> LETRAS = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 const vector<char> DIGITOS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
@@ -6,8 +7,8 @@ const vector<string> SIMBOLOS_ESPECIAIS = {".", ";", ",", "(", ")", ":", "=", "<
 const vector<string> PALAVRAS_RESERVADAS = {"program", "label", "var", "procedure", "function", "begin", "end", "if", "then", "else", "while", "do", "or", "and",
      "div", "not", "read", "write", "integer"};
 const vector<string> SIMBOLOS_COMUNS = {" ", "", "\t", "\n"};
-map<string,string> TOKENS = {{".","pt"}, {";","ptvig"}, {",","vig"}, {"(","ap"}, {")","fp"}, {":","dpt"}, {"=", "ig"}, {"+","soma"}, {"-", "menos"}, {"*", "multi"},
- {":=", "atrib"}, {"<=", "<="}, {">=", ">="}, {"program", "prog"}, {"label", "lbl"}, {"var", "v"}, {"integer", "int"}, {"procedure", "proc"}, {"read", "rd"},
+map<string,string> TOKENS = {{".","."}, {";",";"}, {",",","}, {"(","("}, {")",")"}, {":",":"}, {"=", "="}, {"+","+"}, {"-", "-"}, {"*", "*"},
+ {":=", ":="}, {"<=", "<="}, {">=", ">="}, {"program", "prog"}, {"label", "lbl"}, {"var", "v"}, {"integer", "int"}, {"procedure", "proc"}, {"read", "rd"},
  {"write", "wrt"}, {"function", "fn"}, {"begin", "beg"}, {"end", "end"}, {"if", "if"},
  {"then", "then"}, {"else", "el"}, {"while", "while"}, {"do", "do"}, {"or", "or"}, {"and", "and"}, {"div", "/"}, {"not", "not"}};
 
@@ -61,17 +62,17 @@ string Analex::proximoSimbolo(){
 }
 
 void Analex::showError(int tipo, int linha){
-    switch (tipo)
-    {
-    case 0: // Simbolo desconhecido
-        cerr << "Error: Simbolo desconhecido\nLinha: " << linha << "\n";
-        break;
-    case 1: // Identificador ou numero mal formado
-        cerr << "Error: identificador ou numero mal formado\nLinha: " << linha << "\n";
-        break;
-    default:
-        break;
-    }
+    // switch (tipo)
+    // {
+    // case 0: // Simbolo desconhecido
+    //     cerr << "Error: Simbolo desconhecido\nLinha: " << linha << "\n";
+    //     break;
+    // case 1: // Identificador ou numero mal formado
+    //     cerr << "Error: identificador ou numero mal formado\nLinha: " << linha << "\n";
+    //     break;
+    // default:
+    //     break;
+    // }
 }
 
 void Analex::analisar(){
@@ -126,7 +127,7 @@ void Analex::analisar(){
             }
 
             if(pertence(simbolo, LETRAS))
-                showError(1,linha);
+                Exceptions::showError(1,linha, atomo + simbolo);
             
             arquivoSaida << getToken(2, atomo) << " ";
         }
@@ -138,7 +139,7 @@ void Analex::analisar(){
             simbolo = proximoSimbolo();
         }
         else{
-            showError(0, linha);
+            Exceptions::showError(0, linha, atomo + simbolo);
             simbolo = proximoSimbolo();
         }
 
