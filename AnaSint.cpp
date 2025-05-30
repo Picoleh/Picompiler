@@ -1,63 +1,111 @@
 #include "AnaSint.h"
 #include "Exceptions.h"
-
-ifstream arquivo;
-char simbolo;
-int linha;
+#include "Constantes.h"
 
 void AnaSint::programa(){
-    string gabarito = "program";
-    for(int i=0; i < gabarito.size(); i++){
-        if(simbolo != gabarito[i]){
-            Exceptions::showError(2,linha,"Sintax Error");
-            return;
-        }
-        simbolo = proximoSimbolo();
-    }
+    proximoAtomo();
+    if(atomo == "prog"){
+        identificador();
 
-    identificador();
-    simbolo = proximoSimbolo();
-    if(simbolo == ';'){
-        bloco();
-        simbolo = proximoSimbolo();
-        if(simbolo != '.'){
-            Exceptions::showError(2, linha, "doideira");
-            return;
+        proximoAtomo();
+
+        if(atomo == ";"){
+            bloco();
+            proximoAtomo();
+            if(atomo == "."){
+                return;
+            }
+            else
+                Exceptions::showError(2,linha,atomo);
+        }
+        else
+            Exceptions::showError(2,linha,atomo);
+    }
+    else
+        Exceptions::showError(2,linha,atomo);
+}
+
+void AnaSint::bloco(){
+    proximoAtomo();
+}
+
+void AnaSint::parteDeclaracaoVariavies(){
+    if(atomo == "v"){
+        while(declaracaoVariaveis()){
+            proximoAtomo();
+            if(atomo != ";")
+                Exceptions::showError(2,linha,atomo);
         }
     }
-    else{
-        Exceptions::showError(2,linha,"sla vei");
-        return;
+}
+
+bool AnaSint::declaracaoVariaveis(){
+    listaIdentificadores();
+    proximoAtomo();
+    if(atomo == ":"){
+        proximoAtomo();
+        if(atomo != "int" && atomo != "bool"){
+            Exceptions::showError(2,linha,atomo);
+            return false;
+        }
+    }
+    else
+        return false;
+
+    return true;
+}
+
+void AnaSint::listaIdentificadores(){
+    identificador();
+    proximoAtomo();
+    while(atomo == ","){
+        identificador();
+        proximoAtomo();
     }
 }
 
 void AnaSint::identificador(){
-    
-}
-
-void AnaSint::bloco(){
-    
-}
-
-char AnaSint::proximoSimbolo(){
-    char c = static_cast<char>(arquivo.get());
-    if(c == '\n'){
-        linha++;
-        return proximoSimbolo();
+    if(!pertence(atomo, Constantes::TOKENS_ID)){
     }
-    else
-        return tolower(c);
+    else{
+        Exceptions::showError(2,linha,atomo);
+    }
 }
 
-void AnaSint::analisar(){
-    string nomeArquivo = "Trab1_Compiladores.txt";
-    arquivo.open(nomeArquivo);
+void AnaSint::proximoAtomo(){
+    string aux = "";
+    char c;
+    while(c = static_cast<char>(arquivo.get()) != ' '){
+        if(c == '\n'){
+            linha++;
+            break;
+        }
+        aux += string(1,c);
+    }
+
+    atomo = aux;
+}
+
+void AnaSint::analisar(string caminhoArquivo){
+    
+    if(!openFile(caminhoArquivo))
+        return;
+
+    linha = 1;
+    programa();
+}
+
+bool AnaSint::pertence(string simbolo, const vector<string> conjunto){
+    return (find(conjunto.begin(), conjunto.end(), simbolo) != conjunto.end());
+}
+
+bool AnaSint::openFile(string caminhoArquivo){
+    arquivo.open(caminhoArquivo);
 
     if (!arquivo) {
         cerr << "Erro ao abrir o arquivo de entrada!\n";
-        return;
+        return false;
     }
-    linha = 1;
-    simbolo = proximoSimbolo();
 
+    return true;
 }

@@ -15,12 +15,12 @@ string Analex::getToken(int tipo, string atomo){
         return Constantes::TOKENS[atomo];
         break;
     case 1:{ // Identificadores
-        int pos = getPosInVector(atomo, TOKENS_ID);
+        int pos = getPosInVector(atomo, Constantes::TOKENS_ID);
         if(pos != -1)
             return "id" + to_string(pos);
         else{
-            TOKENS_ID.push_back(atomo);
-            return "id" + to_string(TOKENS_ID.size()-1);
+            Constantes::TOKENS_ID.push_back(atomo);
+            return "id" + to_string(Constantes::TOKENS_ID.size()-1);
         }
         break;
     }

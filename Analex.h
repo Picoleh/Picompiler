@@ -10,7 +10,7 @@ using namespace std;
 
 class Analex{
     private:
-    vector<string> TOKENS_ID;
+    //vector<string> TOKENS_ID;
     ifstream arquivo;
     ofstream arquivoSaida;
     bool pertence(string simbolo, const vector<string> conjunto);
