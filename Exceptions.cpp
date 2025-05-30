@@ -10,6 +10,8 @@ void Exceptions::showError(int tipo, int linha, string atomo){
     case 1: // Identificador ou numero mal formado
         cerr << " Identificador ou numero mal formado\n";
         break;
+    case 2:
+        cerr << " Erro de sintaxe\n";
     default:
         break;
     }

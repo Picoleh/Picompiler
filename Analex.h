@@ -10,15 +10,19 @@ using namespace std;
 
 class Analex{
     private:
+    vector<string> TOKENS_ID;
+    ifstream arquivo;
+    ofstream arquivoSaida;
     bool pertence(string simbolo, const vector<string> conjunto);
     bool pertence(string simbolo, const vector<char> conjunto);
     string proximoSimbolo();
-    void showError(int tipo, int linha);
     string getToken(int tipo, string atomo);
     int getPosInVector(string chave, vector<string> v);
+    bool openFiles(string caminhoArquivo);
+    void closeFiles();
 
 
     public:
-    void analisar();
+    void analisar(string caminhoArquivo);
 
 };
