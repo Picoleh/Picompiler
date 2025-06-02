@@ -12,9 +12,10 @@ using namespace std;
 
 int main(){
     Analex analex;
-    analex.analisar("Trab1_Compiladores.txt");
+    analex.analisar("teste.txt");
 
-    
+    AnaSint anasint;
+    anasint.analisar("saidaAnalex.txt");
 
     return 0;
 }

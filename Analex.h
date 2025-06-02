@@ -13,8 +13,8 @@ class Analex{
     //vector<string> TOKENS_ID;
     ifstream arquivo;
     ofstream arquivoSaida;
-    bool pertence(string simbolo, const vector<string> conjunto);
-    bool pertence(string simbolo, const vector<char> conjunto);
+    bool pertence(string simbolo, vector<string> conjunto);
+    bool pertence(string simbolo, vector<char> conjunto);
     string proximoSimbolo();
     string getToken(int tipo, string atomo);
     int getPosInVector(string chave, vector<string> v);

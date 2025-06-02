@@ -20,6 +20,7 @@ string Analex::getToken(int tipo, string atomo){
             return "id" + to_string(pos);
         else{
             Constantes::TOKENS_ID.push_back(atomo);
+            Constantes::IDS.push_back("id" + to_string(Constantes::TOKENS_ID.size()-1));
             return "id" + to_string(Constantes::TOKENS_ID.size()-1);
         }
         break;
@@ -89,7 +90,7 @@ void Analex::analisar(string caminhoArquivo){
             }
 
             if(pertence(simbolo, Constantes::LETRAS))
-                Exceptions::showError(1,linha, atomo + simbolo);
+                Exceptions::showLexicalError(1,linha, atomo + simbolo);
             
             arquivoSaida << getToken(2, atomo) << " ";
         }
@@ -101,11 +102,13 @@ void Analex::analisar(string caminhoArquivo){
             simbolo = proximoSimbolo();
         }
         else{
-            Exceptions::showError(0, linha, atomo + simbolo);
+            Exceptions::showLexicalError(0, linha, atomo + simbolo);
             simbolo = proximoSimbolo();
         }
 
     }
+
+    closeFiles();
 }
 
 bool Analex::openFiles(string caminhoArquivo){
