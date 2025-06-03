@@ -52,7 +52,7 @@ void AnaSint::parteDeclaracaoVariavies(){
 bool AnaSint::declaracaoVariaveis(){
     proximoAtomo();
     if(listaIdentificadores()){
-        // Para sair da função anterior, ja leu-se o proximoAtomo()
+        //proximoAtomo()
         if(atomo == ":"){
             proximoAtomo();
             if(atomo != "int" && atomo != "bool"){
@@ -93,16 +93,16 @@ void AnaSint::parteDeclaracaoSubRotinas(){
     bool houveDeclaracaoSub = true;
     while(houveDeclaracaoSub){
         houveDeclaracaoSub = false;
-        // Ja leu-se o proximoAtomo()
+        //proximoAtomo()
         if(declaracaoProcedimento()){
             houveDeclaracaoSub = true;
-             // Ja leu-se o proximoAtomo()
+             //proximoAtomo()
             if(atomo == ";")
                 proximoAtomo();
             else
                 Exceptions::showSyntaxError(linha,atomo,";");
         }
-        // Ja leu-se o proximoAtomo()
+        //proximoAtomo()
         if(declaracaoFuncao()){
             houveDeclaracaoSub = true;
             proximoAtomo();
@@ -119,7 +119,7 @@ bool AnaSint::declaracaoProcedimento(){
         proximoAtomo();
         if(identificador()){
             parametrosFormais();
-            // Para sair da função anterior, ja leu-se o proximoAtomo()
+            //proximoAtomo()
             if(atomo == ";"){
                 bloco();
                 return true;
@@ -143,7 +143,7 @@ bool AnaSint::declaracaoFuncao(){
         proximoAtomo();
         if(identificador()){
             parametrosFormais();
-            // Para sair da função anterior, ja leu-se o proximoAtomo()
+            //proximoAtomo()
             if(atomo == ":"){
                 proximoAtomo();
                 if(identificador()){
@@ -199,7 +199,7 @@ void AnaSint::secaoParametrosFormais(){
         proximoAtomo();
     
     if(listaIdentificadores()){
-        // Para sair da função anterior, ja leu-se o proximoAtomo()
+        //proximoAtomo()
         if(atomo == ":"){
             proximoAtomo();
             if(atomo != "int" && atomo != "bool"){
@@ -216,10 +216,10 @@ void AnaSint::secaoParametrosFormais(){
 }
 
 bool AnaSint::comandoComposto(){
-    // Ja leu-se o proximoAtomo()
+    //proximoAtomo()
     if(atomo == "beg"){
         comando();
-        //proximoAtomo();
+        //proximoAtomo()
         while(atomo == ";"){
             if(comando())
                 proximoAtomo();
@@ -237,13 +237,18 @@ bool AnaSint::comandoComposto(){
 }
 
 bool AnaSint::comando(){
-    // numero?
+    proximoAtomo();
+    
+    if(numero()){
+        proximoAtomo();
+        if(atomo != ":")
+            Exceptions::showSyntaxError(linha,atomo,":");
+    }
 
     return comandoSemRotulo();
 }
 
 bool AnaSint::comandoSemRotulo(){
-    proximoAtomo();
 
     if(identificador()){
         proximoAtomo();
@@ -335,7 +340,18 @@ bool AnaSint::fator(){
 }
 
 bool AnaSint::chamadaFuncao(){
-    return false;
+    if(atomo == "("){
+        listaExpressoes();
+        //proximoAtomo();
+        if(atomo == ")"){
+            return true;
+        }
+        else{
+            Exceptions::showSyntaxError(linha, atomo, ")");
+            return false;
+        }
+    }
+    return true;
 }
 
 bool AnaSint::chamadaProcedimento(){
@@ -372,6 +388,10 @@ bool AnaSint::comandoRepetitivo(){
         if(atomo == "do"){
             comandoSemRotulo();
         }
+        else{
+            Exceptions::showSyntaxError(linha,atomo, "do");
+            return false;
+        }
 
         return true;
     }
@@ -385,14 +405,18 @@ bool AnaSint::comandoCondicional(){
         expressao();
         //proximoAtomo();
         if(atomo == "then"){
+            proximoAtomo();
             comandoSemRotulo();
-            //proximoAtomo();
             if(atomo == "el"){
+                proximoAtomo();
                 comandoSemRotulo();
             }
-
+            return true;
         }
-        return true;
+        else{
+            Exceptions::showSyntaxError(linha,atomo, "then");
+            return false;
+        }
     }
     else
         return false;
