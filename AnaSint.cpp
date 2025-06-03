@@ -247,13 +247,13 @@ bool AnaSint::comandoSemRotulo(){
 
     if(identificador()){
         proximoAtomo();
-        if(atribuicao() || chamadaProcedimento())
-            return true;
+        if(!atribuicao())
+            chamadaProcedimento();
+        return true;
     }
 
-    if(comandoComposto() || comandoCondicional())
+    if(comandoComposto() || comandoCondicional() || comandoRepetitivo())
         return true; 
-    // comandoRepetitivo();
 
     return false;
 }
@@ -343,7 +343,6 @@ bool AnaSint::chamadaProcedimento(){
         listaExpressoes();
         //proximoAtomo();
         if(atomo == ")"){
-            proximoAtomo();
             return true;
         }
         else{
@@ -351,7 +350,7 @@ bool AnaSint::chamadaProcedimento(){
             return false;
         }
     }
-    return false;
+    return true;
 }
 
 void AnaSint::listaExpressoes(){
@@ -367,7 +366,18 @@ void AnaSint::listaExpressoes(){
 }
 
 bool AnaSint::comandoRepetitivo(){
-    return false;
+    if(atomo == "while"){
+        expressao();
+        //proximoAtomo();
+        if(atomo == "do"){
+            comandoSemRotulo();
+        }
+
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 bool AnaSint::comandoCondicional(){
@@ -393,7 +403,7 @@ bool AnaSint::relacao(){
 }
 
 bool AnaSint::identificador(){
-    if(pertence(atomo, Constantes::IDS))
+    if(pertence(atomo, Constantes::IDS) || atomo == "rd" || atomo == "wrt")
         return true;
     else
         return false;
